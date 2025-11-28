@@ -1,0 +1,94 @@
+.main-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.pokeball-icon {
+    width: 120px;
+    margin-bottom: 30px;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.main-title {
+    color: #f0f0f0;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.7);
+}
+
+.pokemon-menu {
+    width: 350px;
+    background-color: #f0f0f0;
+    border: 5px solid #585858;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.7);
+    color: #333;
+}
+
+.pokemon-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pokemon-menu li {
+    position: relative;
+    padding: 15px;
+    margin: 8px 0;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.pokemon-menu a {
+    text-decoration: none;
+    color: #333;
+    font-size: 12px;
+    display: block;
+    text-align: center;
+}
+
+.pokemon-menu li.active {
+    border: 2px solid #e63946;
+    background-color: #ffebee;
+}
+
+.pokemon-menu li.active a {
+    color: #e63946;
+}
+
+.pokemon-menu li.active::before {
+    content: '►';
+    color: #212121;
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+}
+
+.pokemon-menu li:hover {
+    border: 2px solid #e63946;
+    background-color: #ffebee;
+}
+
+.pokemon-menu li:hover a {
+    color: #e63946;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}

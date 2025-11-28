@@ -1,0 +1,120 @@
+.multiplayer-setup-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.setup-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #64ffda;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+}
+
+.button-group {
+    margin: 2rem 0;
+}
+
+.create-btn,
+.join-btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.create-btn {
+    background: #64ffda;
+    color: #1a1a2e;
+}
+
+.create-btn:hover:not(:disabled) {
+    background: #4fd3b0;
+    transform: translateY(-2px);
+}
+
+.create-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.divider {
+    text-align: center;
+    margin: 1rem 0;
+    color: #64ffda;
+    font-weight: bold;
+}
+
+.join-section {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.game-id-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.join-btn {
+    background: #ff6b6b;
+    color: white;
+    white-space: nowrap;
+}
+
+.join-btn:hover:not(:disabled) {
+    background: #ff5252;
+    transform: translateY(-2px);
+}
+
+.back-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #64ffda;
+    border-radius: 8px;
+    background: transparent;
+    color: #64ffda;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: #64ffda;
+    color: #1a1a2e;
+}
