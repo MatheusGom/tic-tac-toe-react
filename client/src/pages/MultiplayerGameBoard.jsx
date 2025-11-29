@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/GameBoard.css';
 
-function MultiplayerGameBoard({ navigateTo, socket }) {
-    const [game, setGame] = useState(null);
-    const [loading, setLoading] = useState(true);
+function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
+    const [game, setGame] = useState(() => {
+        if (gameData && gameData.gameState) {
+            return gameData.gameState;
+        }
+        return null;
+    });
+
+    const [loading, setLoading] = useState(() => !gameData);
 
     useEffect(() => {
         const handleGameCreated = (data) => {
+            console.log('Game created event:', data);
             setGame(data.gameState);
             setLoading(false);
         };
 
         const handleGameJoined = (data) => {
+            console.log('Game joined event:', data);
             setGame(data.gameState);
             setLoading(false);
         };
@@ -26,7 +34,7 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
         };
 
         const handleError = (data) => {
-            alert(data.message);
+            alert('Error: ' + data.message);
             navigateTo('menu');
         };
 
@@ -49,43 +57,27 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
         if (game && socket) {
             socket.emit('leave-game', { gameId: game.id });
         }
-        navigateTo('multiplayer-setup');
+        navigateTo('menu');
     };
 
     const makeMove = (position) => {
-        if (!game ||
-            game.board[position] !== null ||
-            game.gameOver ||
-            !isMyTurn()) {
+        if (!game || game.board[position] !== null || game.gameOver || !isMyTurn()) {
             return;
         }
-
-        socket.emit('make-move', {
-            gameId: game.id,
-            position: position
-        });
+        socket.emit('make-move', { gameId: game.id, position: position });
     };
 
     const isMyTurn = () => {
         if (!game || !socket) return false;
-
-        const currentPlayerId = game.currentPlayer;
         const myPlayerKey = getMyPlayerKey();
-
-        return currentPlayerId === myPlayerKey;
+        return game.currentPlayer === myPlayerKey;
     };
 
     const getMyPlayerKey = () => {
         if (!game) return null;
-
         if (game.players.player1.id === socket.id) return 'player1';
         if (game.players.player2.id === socket.id) return 'player2';
         return null;
-    };
-
-    const getMyPlayer = () => {
-        const myKey = getMyPlayerKey();
-        return myKey ? game.players[myKey] : null;
     };
 
     const getCellSymbol = (cell) => {
@@ -103,7 +95,7 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
         </div>
     );
 
-    if (loading || !game) {
+    if (loading) {
         return (
             <div className="game-board-page">
                 <h1 className="game-title">TIC TAC TOE</h1>
@@ -112,16 +104,21 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
         );
     }
 
+    if (!game) {
+        return (
+            <div className="game-board-page">
+                <h1 className="game-title">TIC TAC TOE</h1>
+                <div className="loading">GAME NOT FOUND</div>
+                <button className="menu-btn" onClick={() => navigateTo('menu')} style={{ marginTop: '20px' }}>
+                    BACK TO MENU
+                </button>
+            </div>
+        );
+    }
+
     if (game.status === 'waiting') {
         return (
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '100vh',
-                padding: '20px'
-            }}>
+            <div className="game-board-page">
                 <h1 className="game-title">TIC TAC TOE - MULTIPLAYER</h1>
 
                 <div style={{
@@ -133,14 +130,11 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
                     color: '#333',
                     textAlign: 'center',
                     maxWidth: '500px',
-                    width: '100%'
+                    margin: '20px auto'
                 }}>
-                    <h2 style={{
-                        color: '#e63946',
-                        fontSize: '16px',
-                        marginBottom: '20px',
-                        textShadow: '2px 2px 0px rgba(0, 0, 0, 0.3)'
-                    }}>WAITING FOR PLAYER 2</h2>
+                    <h2 style={{ color: '#e63946', fontSize: '16px', marginBottom: '20px' }}>
+                        WAITING FOR PLAYER 2
+                    </h2>
 
                     <div style={{
                         backgroundColor: 'white',
@@ -149,57 +143,19 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
                         margin: '20px 0',
                         borderRadius: '5px',
                         fontSize: '18px',
-                        fontWeight: 'bold',
-                        color: '#333'
+                        fontWeight: 'bold'
                     }}>
                         GAME ID: {game.id}
                     </div>
 
-                    <div style={{
-                        color: '#666',
-                        fontSize: '12px',
-                        marginBottom: '25px',
-                        lineHeight: '1.5'
-                    }}>
-                        Share this Game ID with your friend so they can join the game
-                    </div>
-
-                    <div style={{
-                        backgroundColor: 'white',
-                        border: '2px solid #585858',
-                        padding: '15px',
-                        margin: '20px 0',
-                        borderRadius: '5px',
-                        fontSize: '10px',
-                        textAlign: 'left'
-                    }}>
-                        <h4 style={{
-                            color: '#e63946',
-                            marginBottom: '10px',
-                            fontSize: '11px'
-                        }}>HOW TO PLAY:</h4>
-                        <ol style={{ marginLeft: '15px' }}>
-                            <li style={{ marginBottom: '8px' }}>Share the Game ID above with your friend</li>
-                            <li style={{ marginBottom: '8px' }}>Your friend should go to Multiplayer mode and click "JOIN GAME"</li>
-                            <li style={{ marginBottom: '8px' }}>They need to enter the Game ID and their name</li>
-                            <li style={{ marginBottom: '8px' }}>The game will start automatically when they join</li>
-                        </ol>
+                    <div style={{ color: '#666', fontSize: '12px', marginBottom: '25px' }}>
+                        Share this Game ID with your friend
                     </div>
 
                     <button
+                        className="menu-btn"
                         onClick={cancelGame}
-                        style={{
-                            backgroundColor: '#8d99ae',
-                            color: 'white',
-                            padding: '12px 24px',
-                            border: '3px solid #585858',
-                            borderRadius: '5px',
-                            fontFamily: "'Press Start 2P', cursive",
-                            fontSize: '10px',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                            marginTop: '15px'
-                        }}
+                        style={{ backgroundColor: '#8d99ae' }}
                     >
                         CANCEL GAME
                     </button>
@@ -208,8 +164,7 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
         );
     }
 
-    const isDraw = game.gameOver && game.winner === 'draw';
-    const myPlayer = getMyPlayer();
+    const myPlayerKey = getMyPlayerKey();
 
     return (
         <div className="game-board-page">
@@ -218,19 +173,14 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
             <div className="game-container">
                 <div className="turn-log">
                     <h3>TURN LOG</h3>
-                    <div className="turn-log-column">
-                        <div className="log-list">
-                            {game.turnLog.map((log, index) => (
-                                <div key={index} className="log-item">
-                                    <span className="turn-number">TURN {log.turn}</span>
-                                    <span className="log-player">{log.player}</span>
-                                    <span className="log-position">POS: {log.position}</span>
-                                </div>
-                            ))}
-                            {game.turnLog.length === 0 && (
-                                <div className="no-log">NO MOVES YET</div>
-                            )}
-                        </div>
+                    <div className="log-list">
+                        {game.turnLog.map((log, index) => (
+                            <div key={index} className="log-item">
+                                <span className="turn-number">TURN {log.turn}</span>
+                                <span className="log-player">{log.player}</span>
+                                <span className="log-position">POS: {log.position}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
@@ -244,7 +194,6 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
                             {!isMyTurn() && ' (Waiting...)'}
                         </div>
                     </div>
-
                     <div className="board">
                         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(renderCell)}
                     </div>
@@ -254,19 +203,13 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
                     <div className="scoreboard">
                         <h3>SCOREBOARD</h3>
                         <div className="score-item">
-                            <span className={`player-name ${game.gameOver && game.winner === 'player1' ? 'winner' :
-                                game.gameOver && game.winner === 'player2' ? 'loser' :
-                                    isDraw ? 'draw' : ''
-                                } ${myPlayer?.symbol === 'X' ? 'my-player' : ''}`}>
+                            <span className={`player-name ${myPlayerKey === 'player1' ? 'my-player' : ''}`}>
                                 {game.players.player1.name} (X)
                             </span>
                             <span className="score">{game.players.player1.score}</span>
                         </div>
                         <div className="score-item">
-                            <span className={`player-name ${game.gameOver && game.winner === 'player2' ? 'winner' :
-                                game.gameOver && game.winner === 'player1' ? 'loser' :
-                                    isDraw ? 'draw' : ''
-                                } ${myPlayer?.symbol === 'O' ? 'my-player' : ''}`}>
+                            <span className={`player-name ${myPlayerKey === 'player2' ? 'my-player' : ''}`}>
                                 {game.players.player2.name} (O)
                             </span>
                             <span className="score">{game.players.player2.score}</span>

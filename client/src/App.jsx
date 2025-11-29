@@ -19,54 +19,30 @@ function App() {
   useEffect(() => {
     let isMounted = true;
 
-    const initializeSocket = async () => {
-      try {
-        console.log('🔄 Connecting to server:', SERVER_URL);
+    const initializeSocket = () => {
+      const newSocket = io(SERVER_URL, {
+        transports: ['websocket', 'polling']
+      });
 
-        const newSocket = io(SERVER_URL, {
-          transports: ['websocket', 'polling'],
-          timeout: 10000
-        });
-
-        await new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new Error('Connection timeout'));
-          }, 10000);
-
-          newSocket.on('connect', () => {
-            clearTimeout(timeout);
-            console.log('✅ Connected to server');
-            resolve();
-          });
-
-          newSocket.on('connect_error', (error) => {
-            clearTimeout(timeout);
-            console.error('❌ Connection error:', error);
-            reject(error);
-          });
-        });
-
+      newSocket.on('connect', () => {
         if (isMounted) {
           setSocket(newSocket);
           setIsSocketInitialized(true);
-          setConnectionError(false);
         }
-      } catch (error) {
-        console.error('🚨 Failed to initialize socket:', error);
+      });
+
+      newSocket.on('connect_error', () => {
         if (isMounted) {
-          setConnectionError(true);
           setIsSocketInitialized(true);
+          setConnectionError(true);
         }
-      }
+      });
     };
 
     initializeSocket();
 
     return () => {
       isMounted = false;
-      if (socket) {
-        socket.close();
-      }
     };
   }, []);
 
