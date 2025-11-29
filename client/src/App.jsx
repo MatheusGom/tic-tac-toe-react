@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import './App.css';
+import './styles/App.css';
 import MainMenu from './pages/MainMenu';
 import SinglePlayerSetup from './pages/SinglePlayerSetup';
 import GameBoard from './pages/GameBoard';
