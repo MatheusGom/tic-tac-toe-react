@@ -9,15 +9,18 @@ function MultiplayerSetup({ navigateTo, socket }) {
 
     useEffect(() => {
         const handleGameCreated = (data) => {
+            console.log('✅ MultiplayerSetup: Game created, navigating...', data);
             setIsCreating(false);
             navigateTo('multiplayer-game', data);
         };
 
         const handleGameJoined = (data) => {
+            console.log('✅ MultiplayerSetup: Game joined, navigating...', data);
             navigateTo('multiplayer-game', data);
         };
 
         const handleError = (data) => {
+            console.error('❌ MultiplayerSetup Error:', data);
             alert(data.message);
             setIsCreating(false);
         };
@@ -40,6 +43,7 @@ function MultiplayerSetup({ navigateTo, socket }) {
     const createGame = () => {
         if (!playerName.trim() || !socket) return;
 
+        console.log('🎮 Creating game...', { playerName, rounds });
         setIsCreating(true);
         socket.emit('create-game', {
             playerName: playerName.trim(),
@@ -50,6 +54,7 @@ function MultiplayerSetup({ navigateTo, socket }) {
     const joinGame = () => {
         if (!playerName.trim() || !gameId.trim() || !socket) return;
 
+        console.log('🎮 Joining game...', { gameId, playerName });
         socket.emit('join-game', {
             gameId: gameId.trim(),
             playerName: playerName.trim()

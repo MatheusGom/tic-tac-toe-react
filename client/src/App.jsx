@@ -47,6 +47,7 @@ function App() {
   }, []);
 
   const navigateTo = (page, data = null) => {
+    console.log('🔄 Navigating to:', page, 'with data:', data);
     setCurrentPage(page);
     if (data) setGameData(data);
   };
