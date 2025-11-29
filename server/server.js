@@ -245,9 +245,9 @@ setInterval(() => {
 }, 30 * 60 * 1000);
 
 io.on('connection', (socket) => {
-    console.log('✅ User connected:', socket.id);
-    console.log('📊 Active games:', games.size);
-    console.log('👥 Active players:', players.size);
+    console.log('User connected:', socket.id);
+    console.log('Active games:', games.size);
+    console.log('Active players:', players.size);
 
     socket.on('create-game', (data) => {
         try {
@@ -269,10 +269,10 @@ io.on('connection', (socket) => {
                 message: `Game created! Share this ID: ${gameId}`
             });
 
-            console.log(`🎮 Game created: ${gameId} by ${data.playerName}`);
-            console.log('📊 Total games:', games.size);
+            console.log(`Game created: ${gameId} by ${data.playerName}`);
+            console.log('Total games:', games.size);
         } catch (error) {
-            console.error('❌ Error creating game:', error);
+            console.error('Error creating game:', error);
             socket.emit('error', { message: 'Failed to create game' });
         }
     });
@@ -305,10 +305,10 @@ io.on('connection', (socket) => {
                 message: `${data.playerName} joined the game!`
             });
 
-            console.log(`🎯 Player ${data.playerName} joined game: ${data.gameId}`);
-            console.log('📊 Total games:', games.size);
+            console.log(`Player ${data.playerName} joined game: ${data.gameId}`);
+            console.log('Total games:', games.size);
         } catch (error) {
-            console.error('❌ Error joining game:', error);
+            console.error('Error joining game:', error);
             socket.emit('error', { message: 'Failed to join game' });
         }
     });
@@ -337,13 +337,26 @@ io.on('connection', (socket) => {
                     message: result.message
                 });
 
-                console.log(`🎲 Move made in game ${data.gameId} by ${socket.id} at position ${data.position}`);
+                console.log(`Move made in game ${data.gameId} by ${socket.id} at position ${data.position}`);
             } else {
                 socket.emit('error', { message: result.error });
             }
         } catch (error) {
-            console.error('❌ Error making move:', error);
+            console.error('Error making move:', error);
             socket.emit('error', { message: 'Failed to make move' });
+        }
+    });
+
+    socket.on('leave-game', (data) => {
+        const game = games.get(data.gameId);
+        if (game) {
+            games.delete(data.gameId);
+            for (const [playerId, gameId] of players.entries()) {
+                if (gameId === data.gameId) {
+                    players.delete(playerId);
+                }
+            }
+            console.log(`Game ${data.gameId} cancelled by host`);
         }
     });
 
@@ -366,7 +379,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', (reason) => {
-        console.log('❌ User disconnected:', socket.id, 'Reason:', reason);
+        console.log('User disconnected:', socket.id, 'Reason:', reason);
 
         const gameId = players.get(socket.id);
         if (gameId) {
@@ -379,14 +392,14 @@ io.on('connection', (socket) => {
                     gameState: game.getGameState()
                 });
 
-                console.log(`🚪 Player disconnected from game: ${gameId}`);
+                console.log(`Player disconnected from game: ${gameId}`);
             }
 
             players.delete(socket.id);
         }
 
-        console.log('📊 Active games after disconnect:', games.size);
-        console.log('👥 Active players after disconnect:', players.size);
+        console.log('Active games after disconnect:', games.size);
+        console.log('Active players after disconnect:', players.size);
     });
 
     socket.on('ping', () => {
@@ -395,7 +408,7 @@ io.on('connection', (socket) => {
 });
 
 app.use((error, req, res, next) => {
-    console.error('🚨 Server error:', error);
+    console.error('Server error:', error);
     res.status(500).json({
         error: 'Internal server error',
         message: 'Something went wrong on the server'
@@ -414,38 +427,27 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, '0.0.0.0', () => {
-    console.log('🚀 =================================');
-    console.log('🎯 Tic Tac Toe Multiplayer Server');
-    console.log('🚀 =================================');
-    console.log(`📍 Port: ${PORT}`);
-    console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📊 Health check: http://0.0.0.0:${PORT}/health`);
-    console.log('✅ Server is ready to accept connections');
-    console.log('🚀 =================================');
+    console.log('Tic Tac Toe Multiplayer Server');
+    console.log(`Port: ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Health check: http://0.0.0.0:${PORT}/health`);
+    console.log('Server is ready to accept connections');
 });
 
 process.on('SIGTERM', () => {
-    console.log('🛑 SIGTERM received, shutting down gracefully');
+    console.log('SIGTERM received, shutting down gracefully');
     server.close(() => {
-        console.log('✅ Server closed');
+        console.log('Server closed');
         process.exit(0);
     });
 });
 
 process.on('SIGINT', () => {
-    console.log('🛑 SIGINT received, shutting down gracefully');
+    console.log('SIGINT received, shutting down gracefully');
     server.close(() => {
-        console.log('✅ Server closed');
+        console.log('Server closed');
         process.exit(0);
     });
-});
-
-socket.on('leave-game', (data) => {
-    const game = games.get(data.gameId);
-    if (game) {
-        games.delete(data.gameId);
-        console.log(`Game ${data.gameId} cancelled by host`);
-    }
 });
 
 export { app, server, io };
