@@ -4,19 +4,16 @@ import '../styles/GameBoard.css';
 function MultiplayerGameBoard({ navigateTo, socket }) {
     const [game, setGame] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [showWaitingRoom, setShowWaitingRoom] = useState(false);
 
     useEffect(() => {
         const handleGameCreated = (data) => {
             setGame(data.gameState);
             setLoading(false);
-            setShowWaitingRoom(true);
         };
 
         const handleGameJoined = (data) => {
             setGame(data.gameState);
             setLoading(false);
-            setShowWaitingRoom(false);
         };
 
         const handleMoveMade = (data) => {
@@ -115,7 +112,7 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
         );
     }
 
-    if (showWaitingRoom && game.status === 'waiting') {
+    if (game.status === 'waiting') {
         return (
             <div style={{
                 display: 'flex',
@@ -258,8 +255,8 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
                         <h3>SCOREBOARD</h3>
                         <div className="score-item">
                             <span className={`player-name ${game.gameOver && game.winner === 'player1' ? 'winner' :
-                                    game.gameOver && game.winner === 'player2' ? 'loser' :
-                                        isDraw ? 'draw' : ''
+                                game.gameOver && game.winner === 'player2' ? 'loser' :
+                                    isDraw ? 'draw' : ''
                                 } ${myPlayer?.symbol === 'X' ? 'my-player' : ''}`}>
                                 {game.players.player1.name} (X)
                             </span>
@@ -267,8 +264,8 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
                         </div>
                         <div className="score-item">
                             <span className={`player-name ${game.gameOver && game.winner === 'player2' ? 'winner' :
-                                    game.gameOver && game.winner === 'player1' ? 'loser' :
-                                        isDraw ? 'draw' : ''
+                                game.gameOver && game.winner === 'player1' ? 'loser' :
+                                    isDraw ? 'draw' : ''
                                 } ${myPlayer?.symbol === 'O' ? 'my-player' : ''}`}>
                                 {game.players.player2.name} (O)
                             </span>
