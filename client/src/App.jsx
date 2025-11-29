@@ -13,7 +13,6 @@ function App() {
   const [currentPage, setCurrentPage] = useState('menu');
   const [gameData, setGameData] = useState(null);
   const [socket, setSocket] = useState(null);
-  const [isSocketInitialized, setIsSocketInitialized] = useState(false);
   const [connectionError, setConnectionError] = useState(false);
 
   useEffect(() => {
@@ -27,13 +26,11 @@ function App() {
       newSocket.on('connect', () => {
         if (isMounted) {
           setSocket(newSocket);
-          setIsSocketInitialized(true);
         }
       });
 
       newSocket.on('connect_error', () => {
         if (isMounted) {
-          setIsSocketInitialized(true);
           setConnectionError(true);
         }
       });
@@ -47,14 +44,14 @@ function App() {
   }, []);
 
   const navigateTo = (page, data = null) => {
-    console.log('🔄 Navigating to:', page, 'with data:', data);
+    console.log('Navigating to:', page, 'with data:', data);
     setCurrentPage(page);
     if (data) setGameData(data);
   };
 
   const retryConnection = () => {
     setConnectionError(false);
-    setIsSocketInitialized(false);
+    window.location.reload();
   };
 
   const renderPage = () => {
@@ -63,7 +60,7 @@ function App() {
         <div className="error-page">
           <h1 className="game-title">TIC TAC TOE</h1>
           <div className="error-message">
-            <h2>🚨 Connection Error</h2>
+            <h2>Connection Error</h2>
             <p>Unable to connect to the game server.</p>
             <p>This might be because:</p>
             <ul>
@@ -72,23 +69,11 @@ function App() {
               <li>The server URL is incorrect</li>
             </ul>
             <button className="retry-btn" onClick={retryConnection}>
-              🔄 TRY AGAIN
+              TRY AGAIN
             </button>
             <button className="menu-btn" onClick={() => navigateTo('menu')}>
-              🎮 PLAY OFFLINE
+              PLAY OFFLINE
             </button>
-          </div>
-        </div>
-      );
-    }
-
-    if (!isSocketInitialized && (currentPage === 'multiplayer-setup' || currentPage === 'multiplayer-game')) {
-      return (
-        <div className="loading-page">
-          <h1 className="game-title">TIC TAC TOE</h1>
-          <div className="loading">
-            <div>🔄 CONNECTING TO SERVER...</div>
-            <small>This might take a moment on first load</small>
           </div>
         </div>
       );

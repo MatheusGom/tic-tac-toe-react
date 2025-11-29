@@ -40,6 +40,23 @@ function MultiplayerSetup({ navigateTo, socket }) {
         };
     }, [socket, navigateTo]);
 
+    if (!socket || !socket.connected) {
+        return (
+            <div className="multiplayer-setup-page">
+                <h1 className="game-title">MULTIPLAYER MODE</h1>
+                <div className="pokemon-menu">
+                    <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                        <div>Connecting to server...</div>
+                        <small>Please wait a moment</small>
+                    </div>
+                    <button className="back-button" onClick={() => navigateTo('menu')}>
+                        BACK TO MENU
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     const createGame = () => {
         if (!playerName.trim() || !socket) return;
 
@@ -66,12 +83,6 @@ function MultiplayerSetup({ navigateTo, socket }) {
             <h1 className="game-title">MULTIPLAYER MODE</h1>
 
             <div className="pokemon-menu">
-                {!socket && (
-                    <div className="connection-warning">
-                        Connecting to server... Please wait.
-                    </div>
-                )}
-
                 <div className="menu-option">
                     <label>YOUR NAME</label>
                     <input
@@ -81,7 +92,6 @@ function MultiplayerSetup({ navigateTo, socket }) {
                         placeholder="Enter your name"
                         maxLength={20}
                         className="name-input"
-                        disabled={!socket}
                     />
                 </div>
 
@@ -91,7 +101,6 @@ function MultiplayerSetup({ navigateTo, socket }) {
                         value={rounds}
                         onChange={(e) => setRounds(e.target.value)}
                         className="rounds-select"
-                        disabled={!socket}
                     >
                         <option value={1}>1 Round</option>
                         <option value={3}>3 Rounds</option>
@@ -103,7 +112,7 @@ function MultiplayerSetup({ navigateTo, socket }) {
                     <button
                         className="create-button"
                         onClick={createGame}
-                        disabled={!playerName || isCreating || !socket}
+                        disabled={!playerName || isCreating}
                     >
                         {isCreating ? 'CREATING...' : 'CREATE GAME'}
                     </button>
@@ -119,12 +128,11 @@ function MultiplayerSetup({ navigateTo, socket }) {
                             onChange={(e) => setGameId(e.target.value)}
                             placeholder="Enter Game ID"
                             className="game-id-input"
-                            disabled={!socket}
                         />
                         <button
                             className="join-button"
                             onClick={joinGame}
-                            disabled={!playerName || !gameId || !socket}
+                            disabled={!playerName || !gameId}
                         >
                             JOIN GAME
                         </button>
