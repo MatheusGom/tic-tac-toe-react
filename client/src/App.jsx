@@ -104,7 +104,7 @@ function App() {
       case 'multiplayer-setup':
         return <MultiplayerSetup navigateTo={navigateTo} socket={socket} />;
       case 'multiplayer-game':
-        return <MultiplayerGameBoard navigateTo={navigateTo} socket={socket} />;
+        return <MultiplayerGameBoard navigateTo={navigateTo} socket={socket} gameData={gameData} />;
       default:
         return <MainMenu navigateTo={navigateTo} />;
     }
