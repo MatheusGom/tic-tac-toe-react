@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/GameBoard.css';
+import '../styles/MultiplayerGameBoard.css';
 
 function MultiplayerGameBoard({ navigateTo, socket }) {
     const [game, setGame] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showWaitingRoom, setShowWaitingRoom] = useState(false);
 
     useEffect(() => {
         const handleGameCreated = (data) => {
             setGame(data.gameState);
             setLoading(false);
+            setShowWaitingRoom(true);
         };
 
         const handleGameJoined = (data) => {
             setGame(data.gameState);
             setLoading(false);
+            setShowWaitingRoom(false);
         };
 
         const handleMoveMade = (data) => {
@@ -44,6 +48,13 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
             socket.off('error', handleError);
         };
     }, [socket, navigateTo]);
+
+    const cancelGame = () => {
+        if (game && socket) {
+            socket.emit('leave-game', { gameId: game.id });
+        }
+        navigateTo('multiplayer-setup');
+    };
 
     const makeMove = (position) => {
         if (!game ||
@@ -100,8 +111,41 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
         return (
             <div className="game-board-page">
                 <h1 className="game-title">TIC TAC TOE</h1>
-                <div className="loading">
-                    {game?.status === 'waiting' ? 'WAITING FOR PLAYER 2...' : 'LOADING GAME...'}
+                <div className="loading">LOADING GAME...</div>
+            </div>
+        );
+    }
+
+    if (showWaitingRoom && game.status === 'waiting') {
+        return (
+            <div className="waiting-room">
+                <h1 className="game-title">TIC TAC TOE - MULTIPLAYER</h1>
+
+                <div className="waiting-content">
+                    <h2 className="waiting-title">WAITING FOR PLAYER 2</h2>
+
+                    <div className="game-id-display">
+                        GAME ID: {game.id}
+                    </div>
+
+                    <div className="waiting-message">
+                        Share this Game ID with your friend so they can join the game
+                        <span className="loading-dots"></span>
+                    </div>
+
+                    <div className="instructions">
+                        <h4>HOW TO PLAY:</h4>
+                        <ol>
+                            <li>Share the Game ID above with your friend</li>
+                            <li>Your friend should go to Multiplayer mode and click "JOIN GAME"</li>
+                            <li>They need to enter the Game ID and their name</li>
+                            <li>The game will start automatically when they join</li>
+                        </ol>
+                    </div>
+
+                    <button className="cancel-button" onClick={cancelGame}>
+                        CANCEL GAME
+                    </button>
                 </div>
             </div>
         );
@@ -142,12 +186,6 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
                             TURN: {game.players[game.currentPlayer].name}
                             {!isMyTurn() && ' (Waiting...)'}
                         </div>
-                        {game.status === 'waiting' && (
-                            <div className="waiting-message">
-                                Waiting for player 2 to join...<br />
-                                Game ID: {game.id}
-                            </div>
-                        )}
                     </div>
 
                     <div className="board">

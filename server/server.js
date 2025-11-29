@@ -69,7 +69,7 @@ class TicTacToeGame {
         this.gameOver = false;
         this.winner = null;
         this.turnLog = [];
-        this.status = 'waiting'; 
+        this.status = 'waiting';
         this.createdAt = new Date();
         this.lastActivity = new Date();
     }
@@ -228,7 +228,7 @@ class TicTacToeGame {
 
 setInterval(() => {
     const now = new Date();
-    const HOURS_6 = 6 * 60 * 60 * 1000; 
+    const HOURS_6 = 6 * 60 * 60 * 1000;
 
     for (const [gameId, game] of games.entries()) {
         if (now - game.lastActivity > HOURS_6) {
@@ -251,7 +251,7 @@ io.on('connection', (socket) => {
 
     socket.on('create-game', (data) => {
         try {
-            const gameId = uuidv4().substring(0, 8); 
+            const gameId = uuidv4().substring(0, 8);
             const game = new TicTacToeGame(
                 gameId,
                 socket.id,
@@ -438,6 +438,14 @@ process.on('SIGINT', () => {
         console.log('✅ Server closed');
         process.exit(0);
     });
+});
+
+socket.on('leave-game', (data) => {
+    const game = games.get(data.gameId);
+    if (game) {
+        games.delete(data.gameId);
+        console.log(`Game ${data.gameId} cancelled by host`);
+    }
 });
 
 export { app, server, io };

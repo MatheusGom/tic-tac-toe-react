@@ -60,14 +60,14 @@ function MultiplayerSetup({ navigateTo, socket }) {
         <div className="multiplayer-setup-page">
             <h1 className="game-title">MULTIPLAYER MODE</h1>
 
-            <div className="setup-container">
+            <div className="pokemon-menu">
                 {!socket && (
                     <div className="connection-warning">
                         Connecting to server... Please wait.
                     </div>
                 )}
 
-                <div className="input-group">
+                <div className="menu-option">
                     <label>YOUR NAME</label>
                     <input
                         type="text"
@@ -75,15 +75,17 @@ function MultiplayerSetup({ navigateTo, socket }) {
                         onChange={(e) => setPlayerName(e.target.value)}
                         placeholder="Enter your name"
                         maxLength={20}
+                        className="name-input"
                         disabled={!socket}
                     />
                 </div>
 
-                <div className="input-group">
+                <div className="menu-option">
                     <label>ROUNDS</label>
                     <select
                         value={rounds}
                         onChange={(e) => setRounds(e.target.value)}
+                        className="rounds-select"
                         disabled={!socket}
                     >
                         <option value={1}>1 Round</option>
@@ -94,14 +96,16 @@ function MultiplayerSetup({ navigateTo, socket }) {
 
                 <div className="button-group">
                     <button
-                        className="create-btn"
+                        className="create-button"
                         onClick={createGame}
                         disabled={!playerName || isCreating || !socket}
                     >
                         {isCreating ? 'CREATING...' : 'CREATE GAME'}
                     </button>
 
-                    <div className="divider">OR</div>
+                    <div className="divider">
+                        <span>OR</span>
+                    </div>
 
                     <div className="join-section">
                         <input
@@ -113,7 +117,7 @@ function MultiplayerSetup({ navigateTo, socket }) {
                             disabled={!socket}
                         />
                         <button
-                            className="join-btn"
+                            className="join-button"
                             onClick={joinGame}
                             disabled={!playerName || !gameId || !socket}
                         >
@@ -123,7 +127,7 @@ function MultiplayerSetup({ navigateTo, socket }) {
                 </div>
 
                 <button
-                    className="back-btn"
+                    className="back-button"
                     onClick={() => navigateTo('menu')}
                 >
                     BACK TO MENU
