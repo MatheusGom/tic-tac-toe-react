@@ -117,32 +117,93 @@ function MultiplayerGameBoard({ navigateTo, socket }) {
 
     if (showWaitingRoom && game.status === 'waiting') {
         return (
-            <div className="waiting-room">
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+                padding: '20px'
+            }}>
                 <h1 className="game-title">TIC TAC TOE - MULTIPLAYER</h1>
 
-                <div className="waiting-content">
-                    <h2 className="waiting-title">WAITING FOR PLAYER 2</h2>
+                <div style={{
+                    backgroundColor: '#f0f0f0',
+                    border: '5px solid #585858',
+                    borderRadius: '8px',
+                    padding: '30px',
+                    boxShadow: '8px 8px 0px rgba(0, 0, 0, 0.7)',
+                    color: '#333',
+                    textAlign: 'center',
+                    maxWidth: '500px',
+                    width: '100%'
+                }}>
+                    <h2 style={{
+                        color: '#e63946',
+                        fontSize: '16px',
+                        marginBottom: '20px',
+                        textShadow: '2px 2px 0px rgba(0, 0, 0, 0.3)'
+                    }}>WAITING FOR PLAYER 2</h2>
 
-                    <div className="game-id-display">
+                    <div style={{
+                        backgroundColor: 'white',
+                        border: '3px solid #585858',
+                        padding: '15px',
+                        margin: '20px 0',
+                        borderRadius: '5px',
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        color: '#333'
+                    }}>
                         GAME ID: {game.id}
                     </div>
 
-                    <div className="waiting-message">
+                    <div style={{
+                        color: '#666',
+                        fontSize: '12px',
+                        marginBottom: '25px',
+                        lineHeight: '1.5'
+                    }}>
                         Share this Game ID with your friend so they can join the game
-                        <span className="loading-dots"></span>
                     </div>
 
-                    <div className="instructions">
-                        <h4>HOW TO PLAY:</h4>
-                        <ol>
-                            <li>Share the Game ID above with your friend</li>
-                            <li>Your friend should go to Multiplayer mode and click "JOIN GAME"</li>
-                            <li>They need to enter the Game ID and their name</li>
-                            <li>The game will start automatically when they join</li>
+                    <div style={{
+                        backgroundColor: 'white',
+                        border: '2px solid #585858',
+                        padding: '15px',
+                        margin: '20px 0',
+                        borderRadius: '5px',
+                        fontSize: '10px',
+                        textAlign: 'left'
+                    }}>
+                        <h4 style={{
+                            color: '#e63946',
+                            marginBottom: '10px',
+                            fontSize: '11px'
+                        }}>HOW TO PLAY:</h4>
+                        <ol style={{ marginLeft: '15px' }}>
+                            <li style={{ marginBottom: '8px' }}>Share the Game ID above with your friend</li>
+                            <li style={{ marginBottom: '8px' }}>Your friend should go to Multiplayer mode and click "JOIN GAME"</li>
+                            <li style={{ marginBottom: '8px' }}>They need to enter the Game ID and their name</li>
+                            <li style={{ marginBottom: '8px' }}>The game will start automatically when they join</li>
                         </ol>
                     </div>
 
-                    <button className="cancel-button" onClick={cancelGame}>
+                    <button
+                        onClick={cancelGame}
+                        style={{
+                            backgroundColor: '#8d99ae',
+                            color: 'white',
+                            padding: '12px 24px',
+                            border: '3px solid #585858',
+                            borderRadius: '5px',
+                            fontFamily: "'Press Start 2P', cursive",
+                            fontSize: '10px',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            marginTop: '15px'
+                        }}
+                    >
                         CANCEL GAME
                     </button>
                 </div>

@@ -302,3 +302,9 @@
         height: 300px;
     }
 }
+
+.my-player {
+    background-color: #ffeaa7;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
