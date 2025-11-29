@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/GameBoard.css';
-import '../styles/MultiplayerGameBoard.css';
 
 function MultiplayerGameBoard({ navigateTo, socket }) {
     const [game, setGame] = useState(null);
