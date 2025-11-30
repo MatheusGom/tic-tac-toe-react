@@ -111,6 +111,7 @@ function MultiplayerSetup({ navigateTo, socket }) {
                         <option value={1}>1 Round</option>
                         <option value={3}>3 Rounds</option>
                         <option value={5}>5 Rounds</option>
+                        <option value={7}>7 Rounds</option>
                     </select>
                 </div>
 

@@ -124,27 +124,23 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
                         GAME ID: {game.id}
                     </div>
 
-                    <div style={{ color: '#666', fontSize: '12px', marginBottom: '25px', lineHeight: '1.5' }}>
-                        Share this Game ID with your friend so they can join the game
-                    </div>
-
                     <div style={{
                         backgroundColor: 'white',
                         border: '2px solid #585858',
-                        padding: '15px',
+                        padding: '20px',
                         margin: '20px 0',
                         borderRadius: '5px',
                         fontSize: '10px',
                         textAlign: 'left'
                     }}>
-                        <h4 style={{ color: '#e63946', marginBottom: '10px', fontSize: '11px', textAlign: 'center' }}>
+                        <h4 style={{ color: '#e63946', marginBottom: '15px', fontSize: '11px', textAlign: 'center' }}>
                             HOW TO JOIN:
                         </h4>
-                        <ol style={{ marginLeft: '15px' }}>
-                            <li style={{ marginBottom: '8px' }}>Your friend goes to MULTIPLAYER</li>
-                            <li style={{ marginBottom: '8px' }}>Clicks "JOIN GAME"</li>
-                            <li style={{ marginBottom: '8px' }}>Enters this ID: <strong style={{ color: '#e63946' }}>{game.id}</strong></li>
-                            <li style={{ marginBottom: '8px' }}>Clicks "JOIN GAME" button</li>
+                        <ol style={{ marginLeft: '20px', padding: '0' }}>
+                            <li style={{ marginBottom: '10px' }}>Your friend goes to MULTIPLAYER</li>
+                            <li style={{ marginBottom: '10px' }}>Clicks "JOIN"</li>
+                            <li style={{ marginBottom: '10px' }}>Enters this ID: <strong style={{ color: '#e63946' }}>{game.id}</strong></li>
+                            <li style={{ marginBottom: '10px' }}>Clicks "JOIN" button</li>
                             <li>Game starts automatically!</li>
                         </ol>
                     </div>
@@ -162,6 +158,7 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
     }
 
     const myPlayerKey = getMyPlayerKey();
+    const isDraw = game.gameOver && game.winner === 'draw';
 
     return (
         <div className="game-board-page">
@@ -188,7 +185,6 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
                         </div>
                         <div className="current-turn">
                             TURN: {game.players[game.currentPlayer].name}
-                            {!isMyTurn() && ' (Waiting...)'}
                         </div>
                     </div>
                     <div className="board">
@@ -200,13 +196,17 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
                     <div className="scoreboard">
                         <h3>SCOREBOARD</h3>
                         <div className="score-item">
-                            <span className={`player-name ${myPlayerKey === 'player1' ? 'my-player' : ''}`}>
+                            <span className={`player-name ${game.gameOver && game.winner === 'player1' ? 'winner' :
+                                game.gameOver && game.winner === 'player2' ? 'loser' :
+                                    isDraw ? 'draw' : ''} ${myPlayerKey === 'player1' ? 'my-player' : ''}`}>
                                 {game.players.player1.name} (X)
                             </span>
                             <span className="score">{game.players.player1.score}</span>
                         </div>
                         <div className="score-item">
-                            <span className={`player-name ${myPlayerKey === 'player2' ? 'my-player' : ''}`}>
+                            <span className={`player-name ${game.gameOver && game.winner === 'player2' ? 'winner' :
+                                game.gameOver && game.winner === 'player1' ? 'loser' :
+                                    isDraw ? 'draw' : ''} ${myPlayerKey === 'player2' ? 'my-player' : ''}`}>
                                 {game.players.player2.name} (O)
                             </span>
                             <span className="score">{game.players.player2.score}</span>
