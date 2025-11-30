@@ -74,9 +74,9 @@ function App() {
     switch (currentPage) {
       case 'menu':
         return <MainMenu navigateTo={navigateTo} />;
-      case 'singleplayer-setup':
+      case 'single-player-setup':
         return <SinglePlayerSetup navigateTo={navigateTo} />;
-      case 'game':
+      case 'game-board':
         return <GameBoard navigateTo={navigateTo} gameData={gameData} />;
       case 'multiplayer-setup':
         return <MultiplayerSetup navigateTo={navigateTo} socket={socket} />;
