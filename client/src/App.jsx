@@ -49,11 +49,6 @@ function App() {
     if (data) setGameData(data);
   };
 
-  const retryConnection = () => {
-    setConnectionError(false);
-    window.location.reload();
-  };
-
   const renderPage = () => {
     if (connectionError) {
       return (
@@ -68,11 +63,8 @@ function App() {
               <li>There's a network issue</li>
               <li>The server URL is incorrect</li>
             </ul>
-            <button className="retry-btn" onClick={retryConnection}>
-              TRY AGAIN
-            </button>
             <button className="menu-btn" onClick={() => navigateTo('menu')}>
-              PLAY OFFLINE
+              BACK TO MENU
             </button>
           </div>
         </div>

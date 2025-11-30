@@ -6,30 +6,22 @@ function GameBoard({ gameData, navigateTo }) {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const initializeGame = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch('/api/game/start', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        playerName: gameData?.playerName || 'PLAYER1',
-                        rounds: gameData?.rounds || 1
-                    })
-                });
+        const initializeGame = () => {
+            setLoading(true);
 
-                const data = await response.json();
-                setGame(data.game);
-            } catch (error) {
-                console.error('Error starting game:', error);
+            setTimeout(() => {
                 const startingPlayer = Math.random() > 0.5 ? 'player' : 'opponent';
                 setGame({
-                    id: 'offline-game',
+                    id: 'offline-game-' + Date.now(),
                     players: {
-                        player: { name: gameData?.playerName || 'PLAYER1', score: 0 },
-                        opponent: { name: 'CPU', score: 0 }
+                        player: {
+                            name: gameData?.playerName || 'PLAYER1',
+                            score: 0
+                        },
+                        opponent: {
+                            name: 'CPU',
+                            score: 0
+                        }
                     },
                     currentRound: 1,
                     totalRounds: gameData?.rounds || 1,
@@ -39,8 +31,8 @@ function GameBoard({ gameData, navigateTo }) {
                     winner: null,
                     turnLog: []
                 });
-            }
-            setLoading(false);
+                setLoading(false);
+            }, 500);
         };
 
         initializeGame();
@@ -54,7 +46,7 @@ function GameBoard({ gameData, navigateTo }) {
             gameOver: false,
             winner: null,
             currentRound: prev.currentRound + 1,
-            currentPlayer: winner === 'player' ? 'player' : 'opponent',
+            currentPlayer: winner === 'player' ? 'opponent' : 'player',
         }));
     }, []);
 
@@ -83,8 +75,8 @@ function GameBoard({ gameData, navigateTo }) {
         }
     }, []);
 
-    const makeCPUMove = useCallback(async () => {
-        if (!game || game.gameOver) return;
+    const makeCPUMove = useCallback(() => {
+        if (!game || game.gameOver || game.currentPlayer !== 'opponent') return;
 
         const emptyCells = game.board
             .map((cell, index) => cell === null ? index : null)
@@ -93,157 +85,120 @@ function GameBoard({ gameData, navigateTo }) {
         if (emptyCells.length === 0) return;
 
         const randomPosition = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        const newBoard = [...game.board];
+        newBoard[randomPosition] = 'O';
 
-        try {
-            const response = await fetch('/api/game/move', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    gameId: game.id,
-                    position: randomPosition,
-                    player: 'opponent'
-                })
-            });
+        const newTurnLog = [...game.turnLog, {
+            turn: game.turnLog.length + 1,
+            player: game.players.opponent.name,
+            position: randomPosition
+        }];
 
-            const data = await response.json();
-            setGame(data.game);
-        } catch (error) {
-            console.error('Error making CPU move:', error);
-            const newBoard = [...game.board];
-            newBoard[randomPosition] = 'O';
+        const winner = checkWinner(newBoard);
+        const isDraw = newBoard.every(cell => cell !== null);
 
-            const newTurnLog = [...game.turnLog, {
-                turn: game.turnLog.length + 1,
-                player: game.players.opponent.name,
-                position: randomPosition
-            }];
+        let newGameState = {
+            ...game,
+            board: newBoard,
+            turnLog: newTurnLog,
+            currentPlayer: 'player'
+        };
 
-            const winner = checkWinner(newBoard);
-            const isDraw = newBoard.every(cell => cell !== null);
-
-            let newGameState = {
-                ...game,
-                board: newBoard,
-                turnLog: newTurnLog,
-                currentPlayer: 'player'
+        if (winner) {
+            const winnerKey = winner === 'X' ? 'player' : 'opponent';
+            newGameState = {
+                ...newGameState,
+                players: {
+                    ...newGameState.players,
+                    [winnerKey]: {
+                        ...newGameState.players[winnerKey],
+                        score: newGameState.players[winnerKey].score + 1
+                    }
+                }
             };
 
-            if (winner) {
-                const winnerKey = winner === 'X' ? 'player' : 'opponent';
-                newGameState = {
-                    ...newGameState,
-                    players: {
-                        ...newGameState.players,
-                        [winnerKey]: {
-                            ...newGameState.players[winnerKey],
-                            score: newGameState.players[winnerKey].score + 1
-                        }
-                    }
-                };
-
-                if (newGameState.currentRound < newGameState.totalRounds) {
-                    setTimeout(() => resetRound(winnerKey), 500);
-                } else {
-                    const finalWinner = determineFinalWinner(newGameState.players);
-                    newGameState.gameOver = true;
-                    newGameState.winner = finalWinner;
-                }
-            } else if (isDraw) {
-                if (newGameState.currentRound < newGameState.totalRounds) {
-                    setTimeout(() => resetRound(null), 500);
-                } else {
-                    const finalWinner = determineFinalWinner(newGameState.players);
-                    newGameState.gameOver = true;
-                    newGameState.winner = finalWinner;
-                }
+            if (newGameState.currentRound < newGameState.totalRounds) {
+                setTimeout(() => resetRound(winnerKey), 1500);
+            } else {
+                const finalWinner = determineFinalWinner(newGameState.players);
+                newGameState.gameOver = true;
+                newGameState.winner = finalWinner;
             }
-
-            setGame(newGameState);
+        } else if (isDraw) {
+            if (newGameState.currentRound < newGameState.totalRounds) {
+                setTimeout(() => resetRound(null), 1500);
+            } else {
+                const finalWinner = determineFinalWinner(newGameState.players);
+                newGameState.gameOver = true;
+                newGameState.winner = finalWinner;
+            }
         }
+
+        setGame(newGameState);
     }, [game, resetRound, determineFinalWinner]);
 
     useEffect(() => {
         if (game && game.currentPlayer === 'opponent' && !game.gameOver) {
-            const timer = setTimeout(makeCPUMove, 1000);
+            const timer = setTimeout(makeCPUMove, 800);
             return () => clearTimeout(timer);
         }
     }, [game, makeCPUMove]);
 
-    const makeMove = async (position) => {
+    const makeMove = (position) => {
         if (!game || game.board[position] !== null || game.gameOver || game.currentPlayer !== 'player') {
             return;
         }
 
-        try {
-            const response = await fetch('/api/game/move', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    gameId: game.id,
-                    position: position,
-                    player: 'player'
-                })
-            });
+        const newBoard = [...game.board];
+        newBoard[position] = 'X';
 
-            const data = await response.json();
-            setGame(data.game);
-        } catch (error) {
-            console.error('Error making move:', error);
-            const newBoard = [...game.board];
-            newBoard[position] = 'X';
+        const newTurnLog = [...game.turnLog, {
+            turn: game.turnLog.length + 1,
+            player: game.players.player.name,
+            position: position
+        }];
 
-            const newTurnLog = [...game.turnLog, {
-                turn: game.turnLog.length + 1,
-                player: game.players.player.name,
-                position: position
-            }];
+        const winner = checkWinner(newBoard);
+        const isDraw = newBoard.every(cell => cell !== null);
 
-            const winner = checkWinner(newBoard);
-            const isDraw = newBoard.every(cell => cell !== null);
+        let newGameState = {
+            ...game,
+            board: newBoard,
+            turnLog: newTurnLog,
+            currentPlayer: 'opponent'
+        };
 
-            let newGameState = {
-                ...game,
-                board: newBoard,
-                turnLog: newTurnLog,
-                currentPlayer: 'opponent'
+        if (winner) {
+            const winnerKey = 'player';
+            newGameState = {
+                ...newGameState,
+                players: {
+                    ...newGameState.players,
+                    [winnerKey]: {
+                        ...newGameState.players[winnerKey],
+                        score: newGameState.players[winnerKey].score + 1
+                    }
+                }
             };
 
-            if (winner) {
-                const winnerKey = 'player';
-                newGameState = {
-                    ...newGameState,
-                    players: {
-                        ...newGameState.players,
-                        [winnerKey]: {
-                            ...newGameState.players[winnerKey],
-                            score: newGameState.players[winnerKey].score + 1
-                        }
-                    }
-                };
-
-                if (newGameState.currentRound < newGameState.totalRounds) {
-                    setTimeout(() => resetRound(winnerKey), 500);
-                } else {
-                    const finalWinner = determineFinalWinner(newGameState.players);
-                    newGameState.gameOver = true;
-                    newGameState.winner = finalWinner;
-                }
-            } else if (isDraw) {
-                if (newGameState.currentRound < newGameState.totalRounds) {
-                    setTimeout(() => resetRound(null), 500);
-                } else {
-                    const finalWinner = determineFinalWinner(newGameState.players);
-                    newGameState.gameOver = true;
-                    newGameState.winner = finalWinner;
-                }
+            if (newGameState.currentRound < newGameState.totalRounds) {
+                setTimeout(() => resetRound(winnerKey), 1500);
+            } else {
+                const finalWinner = determineFinalWinner(newGameState.players);
+                newGameState.gameOver = true;
+                newGameState.winner = finalWinner;
             }
-
-            setGame(newGameState);
+        } else if (isDraw) {
+            if (newGameState.currentRound < newGameState.totalRounds) {
+                setTimeout(() => resetRound(null), 1500);
+            } else {
+                const finalWinner = determineFinalWinner(newGameState.players);
+                newGameState.gameOver = true;
+                newGameState.winner = finalWinner;
+            }
         }
+
+        setGame(newGameState);
     };
 
     const getCellSymbol = (cell) => {
