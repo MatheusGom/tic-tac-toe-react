@@ -8,6 +8,14 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
         }
         return null;
     });
+    const [titleColor, setTitleColor] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTitleColor(prev => (prev + 1) % 3);
+        }, 2000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const handleGameCreated = (data) => {
@@ -104,6 +112,13 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
     if (game.status === 'waiting') {
         return (
             <div className="game-board-page">
+                <h1 className="game-title">
+                    <span className={titleColor === 0 ? 'title-yellow' : ''}>TIC</span>
+                    <span> </span>
+                    <span className={titleColor === 1 ? 'title-yellow' : ''}>TAC</span>
+                    <span> </span>
+                    <span className={titleColor === 2 ? 'title-yellow' : ''}>TOE</span>
+                </h1>
 
                 <div className="pokemon-menu" style={{ maxWidth: '500px', margin: '20px auto', textAlign: 'center' }}>
                     <h2 style={{ color: '#e63946', fontSize: '16px', marginBottom: '20px' }}>
@@ -178,7 +193,13 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
 
     return (
         <div className="game-board-page">
-            <h1 className="game-title">TIC TAC TOE - MULTIPLAYER</h1>
+            <h1 className="game-title">
+                <span className={titleColor === 0 ? 'title-yellow' : ''}>TIC</span>
+                <span> </span>
+                <span className={titleColor === 1 ? 'title-yellow' : ''}>TAC</span>
+                <span> </span>
+                <span className={titleColor === 2 ? 'title-yellow' : ''}>TOE</span>
+            </h1>
 
             <div className="game-container">
                 <div className="turn-log">
@@ -196,9 +217,6 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
 
                 <div className="board-section">
                     <div className="board-header">
-                        <div className="round-info">
-                            ROUND {game.currentRound} OF {game.totalRounds}
-                        </div>
                         <div className="current-turn">
                             TURN: {game.players[game.currentPlayer].name}
                         </div>

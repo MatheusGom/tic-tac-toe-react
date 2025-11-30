@@ -4,6 +4,14 @@ import '../styles/GameBoard.css';
 function GameBoard({ gameData, navigateTo }) {
     const [game, setGame] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [titleColor, setTitleColor] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTitleColor(prev => (prev + 1) % 3);
+        }, 2000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const initializeGame = () => {
@@ -229,7 +237,13 @@ function GameBoard({ gameData, navigateTo }) {
 
     return (
         <div className="game-board-page">
-            <h1 className="game-title">TIC TAC TOE</h1>
+            <h1 className="game-title">
+                <span className={titleColor === 0 ? 'title-yellow' : ''}>TIC</span>
+                <span> </span>
+                <span className={titleColor === 1 ? 'title-yellow' : ''}>TAC</span>
+                <span> </span>
+                <span className={titleColor === 2 ? 'title-yellow' : ''}>TOE</span>
+            </h1>
 
             <div className="game-container">
                 <div className="turn-log">
@@ -252,9 +266,6 @@ function GameBoard({ gameData, navigateTo }) {
 
                 <div className="board-section">
                     <div className="board-header">
-                        <div className="round-info">
-                            ROUND {game.currentRound} OF {game.totalRounds}
-                        </div>
                         <div className="current-turn">
                             TURN: {game.players[game.currentPlayer].name}
                         </div>

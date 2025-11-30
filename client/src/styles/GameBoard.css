@@ -309,3 +309,22 @@
     border-radius: 3px;
     border: 1px solid #f39c12;
 }
+
+.title-yellow {
+    color: #ffd700;
+    text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.7);
+}
+
+.turn-log,
+.scoreboard {
+    height: 410px;
+}
+
+.board-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
