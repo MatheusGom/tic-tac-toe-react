@@ -49,7 +49,7 @@ function SinglePlayerSetup({ navigateTo }) {
                 </div>
 
                 <div className="menu-option">
-                    <label htmlFor="rounds">NUMBER OF ROUNDS:</label>
+                    <label htmlFor="rounds">ROUNDS:</label>
                     <select
                         id="rounds"
                         className="rounds-select"

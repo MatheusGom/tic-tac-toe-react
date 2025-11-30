@@ -104,7 +104,6 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
     if (game.status === 'waiting') {
         return (
             <div className="game-board-page">
-                <h1 className="game-title">TIC TAC TOE - MULTIPLAYER</h1>
 
                 <div className="pokemon-menu" style={{ maxWidth: '500px', margin: '20px auto', textAlign: 'center' }}>
                     <h2 style={{ color: '#e63946', fontSize: '16px', marginBottom: '20px' }}>
@@ -160,6 +159,23 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
     const myPlayerKey = getMyPlayerKey();
     const isDraw = game.gameOver && game.winner === 'draw';
 
+    const getPlayerStatus = (playerKey) => {
+        if (!game.gameOver) return '';
+
+        if (isDraw) return 'draw';
+
+        const player1Score = game.players.player1.score;
+        const player2Score = game.players.player2.score;
+
+        if (player1Score > player2Score) {
+            return playerKey === 'player1' ? 'winner' : 'loser';
+        } else if (player2Score > player1Score) {
+            return playerKey === 'player2' ? 'winner' : 'loser';
+        }
+
+        return 'draw';
+    };
+
     return (
         <div className="game-board-page">
             <h1 className="game-title">TIC TAC TOE - MULTIPLAYER</h1>
@@ -196,17 +212,13 @@ function MultiplayerGameBoard({ navigateTo, socket, gameData }) {
                     <div className="scoreboard">
                         <h3>SCOREBOARD</h3>
                         <div className="score-item">
-                            <span className={`player-name ${game.gameOver && game.winner === 'player1' ? 'winner' :
-                                game.gameOver && game.winner === 'player2' ? 'loser' :
-                                    isDraw ? 'draw' : ''} ${myPlayerKey === 'player1' ? 'my-player' : ''}`}>
+                            <span className={`player-name ${getPlayerStatus('player1')} ${myPlayerKey === 'player1' ? 'my-player' : ''}`}>
                                 {game.players.player1.name} (X)
                             </span>
                             <span className="score">{game.players.player1.score}</span>
                         </div>
                         <div className="score-item">
-                            <span className={`player-name ${game.gameOver && game.winner === 'player2' ? 'winner' :
-                                game.gameOver && game.winner === 'player1' ? 'loser' :
-                                    isDraw ? 'draw' : ''} ${myPlayerKey === 'player2' ? 'my-player' : ''}`}>
+                            <span className={`player-name ${getPlayerStatus('player2')} ${myPlayerKey === 'player2' ? 'my-player' : ''}`}>
                                 {game.players.player2.name} (O)
                             </span>
                             <span className="score">{game.players.player2.score}</span>

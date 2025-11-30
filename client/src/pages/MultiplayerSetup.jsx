@@ -102,7 +102,7 @@ function MultiplayerSetup({ navigateTo, socket }) {
                 </div>
 
                 <div className="menu-option">
-                    <label>ROUNDS</label>
+                    <label>ROUNDS:</label>
                     <select
                         value={rounds}
                         onChange={(e) => setRounds(e.target.value)}
