@@ -40,6 +40,12 @@ function MultiplayerSetup({ navigateTo, socket }) {
         };
     }, [socket, navigateTo]);
 
+    const handleNameChange = (e) => {
+        const input = e.target.value;
+        const upperCaseInput = input.toUpperCase().slice(0, 12);
+        setPlayerName(upperCaseInput);
+    };
+
     if (!socket || !socket.connected) {
         return (
             <div className="multiplayer-setup-page">
@@ -84,13 +90,13 @@ function MultiplayerSetup({ navigateTo, socket }) {
 
             <div className="pokemon-menu">
                 <div className="menu-option">
-                    <label>YOUR NAME</label>
+                    <label>PLAYER NAME:</label>
                     <input
                         type="text"
                         value={playerName}
-                        onChange={(e) => setPlayerName(e.target.value)}
-                        placeholder="Enter your name"
-                        maxLength={20}
+                        onChange={handleNameChange}
+                        placeholder="ENTER NAME"
+                        maxLength={12}
                         className="name-input"
                     />
                 </div>
@@ -134,17 +140,17 @@ function MultiplayerSetup({ navigateTo, socket }) {
                             onClick={joinGame}
                             disabled={!playerName || !gameId}
                         >
-                            JOIN GAME
+                            JOIN
                         </button>
                     </div>
-                </div>
 
-                <button
-                    className="back-button"
-                    onClick={() => navigateTo('menu')}
-                >
-                    BACK TO MENU
-                </button>
+                    <button
+                        className="back-button"
+                        onClick={() => navigateTo('menu')}
+                    >
+                        BACK TO MENU
+                    </button>
+                </div>
             </div>
         </div>
     );
